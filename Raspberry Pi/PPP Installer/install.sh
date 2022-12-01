@@ -20,10 +20,11 @@ if ! (grep -q 'route' /etc/ppp/ip-up ); then
 fi
 
 mv reconnect.sh /usr/src/
+chmod +x /usr/src/reconnect.h
 mv nbiot.service /etc/systemd/system/
 			  
 systemctl daemon-reload
-# systemctl enable nbiot.service
+systemctl enable nbiot.service
 # sudo pon # to go online for NBIOT modem
 # sudo poff # to go offline for NBIOT modem
 
