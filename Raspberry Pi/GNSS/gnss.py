@@ -39,24 +39,31 @@ try:
     sys.stdout.write('Started GNSS reader\n')
     reader = MicropyGPS(+1)
     initGNSS()
-    while True:
-        try:
-            with serial.Serial(NMEA_PORT, 115200, timeout=5, rtscts=True, dsrdtr=True) as ser:
-                ts = 0
-                while True:
-                    # update
-                    data = ser.read().decode()
-                    reader.update(data)
-                    # read in every 2 seconds
-                    if time() - ts > 2:
-                        ts = time()
-                        print("UTC_Date={}, UTC_Time={}, lat={}, lng={}".format(reader.date_string(), reader.timestamp, ddm2dec(reader.latitude_string()), reader.longitude_string()))
-                        print("GNSS in degress lat={}, lng={}".format(format(ddm2dec(reader.latitude_string()),'f'),format(ddm2dec(reader.longitude_string()),'f')))
-                        print("altitude={}, course={}, speed={}".format(reader.altitude, reader.course, reader.speed_string('kph')))
-            
-        except Exception as e:
-            print("Error: {}".format(str(e)))
-            sleep(1)
-            
+    try:
+        last_time = time()
+        diff = 0
+        count = 1
+        with serial.Serial(NMEA_PORT, 115200, timeout=5, rtscts=True, dsrdtr=True) as ser:
+            while (diff < float(1) ):
+                diff = time() - last_time
+                print (f"Diferencia {diff}")
+                data = ser.read().decode()
+                reader.update(data)
+                print(f"***** lectura {count}")
+                count += 1 
+                # print("UTC_Date={}, UTC_Time={}, lat={}, lng={}".format(reader.date_string(), reader.timestamp, ddm2dec(reader.latitude_string()), reader.longitude_string()))
+                print("GNSS in degress lat={}, lng={}".format(format(ddm2dec(reader.latitude_string()),'f'),format(ddm2dec(reader.longitude_string()),'f')))
+                # print("altitude={}, course={}, speed={}".format(reader.altitude, reader.course, reader.speed_string('kph')))
+            # while True:
+            #     # update
+            data = ser.read().decode()
+            reader.update(data)
+            print("UTC_Date={}, UTC_Time={}, lat={}, lng={}".format(reader.date_string(), reader.timestamp, ddm2dec(reader.latitude_string()), reader.longitude_string()))
+            print("GNSS in degress lat={}, lng={}".format(format(ddm2dec(reader.latitude_string()),'f'),format(ddm2dec(reader.longitude_string()),'f')))
+            print("altitude={}, course={}, speed={}".format(reader.altitude, reader.course, reader.speed_string('kph')))
+    except Exception as e:
+        print("Error: {}".format(str(e)))
+        sleep(1)
+                
 except KeyboardInterrupt:
     sys.stderr.write('Ctrl-C pressed, exiting GNSS reader\n')
